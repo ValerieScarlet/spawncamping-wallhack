@@ -89,6 +89,7 @@ local function oldEvalStuff()
 	}
 	t[#t+1] = Def.ActorFrame {
 		OffsetPlotModificationMessageCommand = function(self, params)
+			local tst = ms.JudgeScalers
 			local rst = getRescoreElements(pss, pss:GetHighScore())
 			if params.Name == "PrevJudge" and judge > 1 then
 				judge = judge - 1
@@ -106,6 +107,9 @@ local function oldEvalStuff()
 			elseif params.Name ~= "ToggleHands" then
 				self:GetParent():playcommand("SetJudge", params)
 			end
+			if not tst[judge] then return end
+			tst = tst[judge]
+			SCREENMAN:GetTopScreen():SetPlayerStageStatsFromReplayData(SCREENMAN:GetTopScreen():GetStageStats():GetPlayerStageStats(PLAYER_1), tst)
 		end
 	}
 
@@ -990,7 +994,7 @@ local function oldEvalStuff()
 				self:diffuse(color(colorConfig:get_data().evaluation.ScoreCardCategoryText))
 			end
 		}
-
+		
 		t[#t+1] = Def.Quad{
 			InitCommand = function(self)
 				self:y(200)

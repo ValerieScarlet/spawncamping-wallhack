@@ -12,7 +12,10 @@ t[#t+1] = LoadActor("scoretracking")
 
 t[#t+1] = LoadActor("judgecount")
 
---t[#t+1] = LoadActor("pacemaker")
+if playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).PaceMaker == true then
+	t[#t+1] = LoadActor("pacemaker")
+end
+
 t[#t+1] = LoadActor("npscalc")
 --t[#t+1] = LoadActor("lifepercent")
 t[#t+1] = LoadActor("lanecover")

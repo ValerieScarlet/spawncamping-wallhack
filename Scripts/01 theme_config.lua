@@ -7,6 +7,7 @@ local defaultConfig = {
 		Particles = true,
 		RateSort = true,
 		ScoreBoardNag = true,
+		HelpMenu = false,
 		MeasureLines = false,
 		ProgressBar = 1, -- 0 = off, 1 bottom , 2 top
 		SongPreview = 3, -- 1 = SM style, 2 = osu! Style (new), 3 = osu! style (old)

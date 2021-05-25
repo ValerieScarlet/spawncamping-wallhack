@@ -136,6 +136,7 @@ local usingReverse
 
 --guess checking if things are enabled before changing them is good for not having a log full of errors
 local enabledErrorBar = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).ErrorBar
+local enabledMiniBar = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).MiniProgressBar
 local enabledTargetTracker = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).TargetTracker
 local enabledDisplayPercent = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).DisplayPercent
 local enabledDisplayMean = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).DisplayMean
@@ -628,6 +629,56 @@ end
 -- Add the completed errorbar frame to the primary actor frame t if enabled
 if enabledErrorBar ~= 0 then
 	t[#t + 1] = e
+end
+
+--[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+														      **Mini Progressbar**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	Song Completion Meter that doesn't eat 100 fps. Courtesy of simply love. Decided to make the full progress bar and mini progress bar
+separate entities. So you can have both, or one or the other, or neither.
+]]
+local width = 34
+local height = 4
+local alpha = 0.3
+
+local mb =
+	Def.ActorFrame {
+	Name = "MiniProgressBar",
+	InitCommand = function(self)
+		self:xy(MovableValues.MiniProgressBarX, MovableValues.MiniProgressBarY)
+		if (allowedCustomization) then
+			Movable.DeviceButton_q.element = self
+			Movable.DeviceButton_q.condition = enabledMiniBar
+			Movable.DeviceButton_q.Border = self:GetChild("Border")
+		end
+	end,
+	Def.Quad {
+		InitCommand = function(self)
+			self:zoomto(width, height):diffuse(color("#666666")):diffusealpha(alpha)
+		end
+	},
+	Def.Quad {
+		InitCommand = function(self)
+			self:x(1 + width / 2):zoomto(1, height):diffuse(color("#555555"))
+		end
+	},
+	Def.SongMeterDisplay {
+		InitCommand = function(self)
+			self:SetUpdateRate(0.5)
+		end,
+		StreamWidth = width,
+		Stream = Def.Quad {
+			InitCommand = function(self)
+				self:zoomy(height):diffuse(getMainColor("highlight"))
+			end
+		}
+	},
+	MovableBorder(width, height, 1, 0, 0)
+}
+
+if enabledMiniBar then
+	t[#t + 1] = mb
 end
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

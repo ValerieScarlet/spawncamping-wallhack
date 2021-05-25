@@ -98,6 +98,34 @@ end
 				return t
 			end
 			
+			function MiniProgressBar()
+				local t = {
+					Name = "MiniProgressBar",
+					LayoutType = "ShowAllInRow",
+					SelectType = "SelectOne",
+					OneChoiceForAllPlayers = false,
+					ExportOnChange = true,
+					Choices = {THEME:GetString("OptionNames", "Off"), THEME:GetString("OptionNames", "On")},
+					LoadSelections = function(self, list, pn)
+						local pref = playerConfig:get_data(pn_to_profile_slot(pn)).MiniProgressBar
+						if pref then
+						list[2] = true
+						else
+						list[1] = true
+						end
+					end,
+					SaveSelections = function(self, list, pn)
+						local value
+						value = list[2]
+						playerConfig:get_data(pn_to_profile_slot(pn)).MiniProgressBar = value
+						playerConfig:set_dirty(pn_to_profile_slot(pn))
+						playerConfig:save(pn_to_profile_slot(pn))
+					end
+				}
+				setmetatable(t, t)
+				return t
+			end
+			
 			local tChoices = {}
 			for i = 1, 99 do
 				tChoices[i] = tostring(i) .. "%"
@@ -621,12 +649,12 @@ function HelpMenu()
 		SelectType = "SelectOne",
 		OneChoiceForAllPlayers = true,
 		ExportOnChange = true,
-		Choices = { "Off","On"},
+		Choices = {THEME:GetString("OptionNames", "Off"), THEME:GetString("OptionNames", "On")},
 		LoadSelections = function(self, list, pn)
 			local pref = themeConfig:get_data().global.HelpMenu
 			if pref then
 				list[2] = true
-			else 
+			else
 				list[1] = true
 			end
 		end,
@@ -642,9 +670,9 @@ function HelpMenu()
 			themeConfig:save()
 		end
 	}
-	setmetatable( t, t )
+	setmetatable(t, t)
 	return t
-end	
+end
 
 function MeasureLines()
 	local t = {

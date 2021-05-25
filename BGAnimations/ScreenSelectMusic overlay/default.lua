@@ -80,6 +80,7 @@ t[#t+1] = LoadActor("currentsort")
 t[#t+1] = StandardDecorationFromFileOptional("BPMDisplay","BPMDisplay")
 t[#t+1] = StandardDecorationFromFileOptional("BPMLabel","BPMLabel")
 t[#t+1] = LoadActor("../_cursor")
+t[#t+1] = LoadActor("../_halppls")
 t[#t+1] = LoadActor("bgm")
 
 local largeImageText = string.format("%s: %5.2f",profile:GetDisplayName(), profile:GetPlayerRating())

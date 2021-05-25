@@ -22,6 +22,8 @@ local function loadValuesTable()
 	MovableValues.TargetTrackerX = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates[keymode].TargetTrackerX
 	MovableValues.TargetTrackerY = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates[keymode].TargetTrackerY
 	MovableValues.TargetTrackerZoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes[keymode].TargetTrackerZoom
+	MovableValues.MiniProgressBarX = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates[keymode].MiniProgressBarX
+	MovableValues.MiniProgressBarY = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates[keymode].MiniProgressBarY
 	MovableValues.DisplayPercentX = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates[keymode].DisplayPercentX
 	MovableValues.DisplayPercentY = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates[keymode].DisplayPercentY
 	MovableValues.DisplayPercentZoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes[keymode].DisplayPercentZoom
@@ -263,6 +265,29 @@ Movable = {
 		DeviceButton_down = {
 			property = "Zoom",
 			inc = -0.01
+		}
+	},
+	DeviceButton_q = {
+		name = "MiniProgressBar",
+		textHeader = "Mini Progress Bar Position:",
+		element = {},
+		properties = {"X", "Y"},
+		elementTree = "GameplayXYCoordinates",
+		DeviceButton_up = {
+			property = "Y",
+			inc = -5
+		},
+		DeviceButton_down = {
+			property = "Y",
+			inc = 5
+		},
+		DeviceButton_left = {
+			property = "X",
+			inc = -5
+		},
+		DeviceButton_right = {
+			property = "X",
+			inc = 5
 		}
 	},
 	DeviceButton_w = {
