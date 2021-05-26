@@ -34,12 +34,13 @@ local sortTable = {
 	SortOrder_JackSpeed				= 'JackSpeed Rating',
 	SortOrder_Chordjack				= 'Chordjack Rating',
 	SortOrder_Technical				= 'Technical Rating',
+	SortOrder_Ungrouped				= 'Ungrouped',
 }
 
 local function searchInput(event)
 	if event.type == "InputEventType_FirstPress" and (event.DeviceInput.button == "DeviceButton_left mouse button" or event.DeviceInput.button == "DeviceButton_right mouse button") then
 		if not active and event.DeviceInput.button == "DeviceButton_right mouse button" then
-			top:PausePreviewNoteField()
+			top:PauseSampleMusic()
 			MESSAGEMAN:Broadcast("PreviewPaused")
 		end
 		if released and active then
@@ -87,9 +88,6 @@ local function searchInput(event)
 		elseif event.DeviceInput.button == "DeviceButton_delete"  then
 			searchstring = ""
 
-		elseif event.DeviceInput.button == "DeviceButton_="  then
-			searchstring = searchstring.."="
-
 		elseif event.DeviceInput.button == "DeviceButton_v" and CtrlPressed then
 			searchstring = searchstring .. HOOKS:GetClipboard()
 
@@ -97,7 +95,7 @@ local function searchInput(event)
 			if CtrlPressed then
 				return false
 			end
-			if event.char and event.char:match('[%%%+%-%!%@%#%$%^%&%*%(%)%=%_%.%,%:%;%\'%"%>%<%?%/%~%|%w]') and event.char ~= "" then
+			if event.char and event.char:match('[%%%+%-%!%@%#%$%^%&%*%(%)%=%_%.%,%:%;%\'%"%>%<%?%/%~%|%w%[%]%{%}%`%\\]') and event.char ~= "" then
 				searchstring = searchstring .. event.char
 			end
 		end

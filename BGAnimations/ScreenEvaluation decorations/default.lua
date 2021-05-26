@@ -1,6 +1,6 @@
 local song = GAMESTATE:GetCurrentSong()
-local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(PLAYER_1)
-local steps = GAMESTATE:GetCurrentSteps(pn)
+local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats()
+local steps = GAMESTATE:GetCurrentSteps()
 
 --ScoreBoard
 local judges = {'TapNoteScore_W1','TapNoteScore_W2','TapNoteScore_W3','TapNoteScore_W4','TapNoteScore_W5','TapNoteScore_Miss'}
@@ -109,7 +109,7 @@ local function oldEvalStuff()
 			end
 			if not tst[judge] then return end
 			tst = tst[judge]
-			SCREENMAN:GetTopScreen():SetPlayerStageStatsFromReplayData(SCREENMAN:GetTopScreen():GetStageStats():GetPlayerStageStats(PLAYER_1), tst)
+			SCREENMAN:GetTopScreen():SetPlayerStageStatsFromReplayData(SCREENMAN:GetTopScreen():GetStageStats():GetPlayerStageStats(), tst, pss:GetHighScore())
 		end
 	}
 
@@ -162,7 +162,7 @@ local function oldEvalStuff()
 			self:halign(0)
 			self:maxwidth((SCREEN_WIDTH/2 - 133 - 10)/0.45)
 			self:diffuse(color(colorConfig:get_data().evaluation.BackgroundText)):diffusealpha(0.8)
-			local mods = GAMESTATE:GetPlayerState(PLAYER_1):GetPlayerOptionsString("ModsLevel_Current")
+			local mods = GAMESTATE:GetPlayerState():GetPlayerOptionsString("ModsLevel_Current")
 			self:settextf("Mods: %s", mods)
 		end
 	}
@@ -376,7 +376,7 @@ local function oldEvalStuff()
 				end,
 				BeginCommand=function(self) 
 					local ss = SCREENMAN:GetTopScreen():GetStageStats() 
-					self:Set(ss,ss:GetPlayerStageStats(pn)) 
+					self:Set(ss,ss:GetPlayerStageStats()) 
 				end 
 			}
 		}
@@ -385,7 +385,7 @@ local function oldEvalStuff()
 
 	local function scoreBoard(pn)
 		local hsTable = getScoreTable(pn, rate)
-		local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+		local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats()
 		local profile = PROFILEMAN:GetProfile(pn)
 		local index
 		if hsTable == nil then
@@ -407,7 +407,7 @@ local function oldEvalStuff()
 
 		local tst = ms.JudgeScalers
 		local tso = tst[judge]
-		local ncol = GAMESTATE:GetCurrentSteps(PLAYER_1):GetNumColumns() - 1
+		local ncol = GAMESTATE:GetCurrentSteps():GetNumColumns() - 1
 		local middleCol = ncol / 2
 		local function recountCBs()
 			tso = tst[judge]
@@ -994,7 +994,7 @@ local function oldEvalStuff()
 				self:diffuse(color(colorConfig:get_data().evaluation.ScoreCardCategoryText))
 			end
 		}
-		
+
 		t[#t+1] = Def.Quad{
 			InitCommand = function(self)
 				self:y(200)
@@ -1270,7 +1270,7 @@ local function oldEvalStuff()
 	local song = STATSMAN:GetCurStageStats():GetPlayedSongs()[1]
 	local profile = GetPlayerOrMachineProfile(player)
 	local hsTable = getScoreTable(player, getCurRate())
-	local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(player)
+	local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats()
 	local score = pss:GetHighScore()
 	local scoreIndex = getHighScoreIndex(hsTable, score)
 	local newScoreboardInitialLocalIndex = scoreIndex
@@ -1367,7 +1367,7 @@ local function oldEvalStuff()
 					scoreList = getScoreTable(player, getCurRate())
 				else
 					scoreList = DLMAN:GetChartLeaderBoard(steps:GetChartKey(), currentCountry)
-					if #scoreList == 0 and not alreadyPulled then
+					if scoreList ~= nil and #scoreList == 0 and not alreadyPulled then
 						updateLeaderBoardForCurrentChart()
 					end
 				end
@@ -1377,9 +1377,9 @@ local function oldEvalStuff()
 				else
 					maxPages = 1
 				end
-				if isLocal or #scoreList ~= 0 then
+				if isLocal or (scoreList ~= nil and #scoreList ~= 0) then
 					self:queuecommand("Set")
-				elseif #scoreList == 0 then
+				elseif scoreList == nil or #scoreList == 0 then
 					self:queuecommand("ListEmpty")
 				end
 
@@ -1484,11 +1484,12 @@ local function oldEvalStuff()
 					self:diffusealpha(0)
 				end,
 				UpdateListMessageCommand = function(self)
-					local scoresOnThisPage = math.abs((curPage-1) * scoresPerPage + 1 - math.min((curPage) * scoresPerPage,#scoreList))
-					if #scoreList == 0 then
+					if scoreList == nil or #scoreList == 0 then
 						self:diffusealpha(0)
 						return
 					end
+
+					local scoresOnThisPage = math.abs((curPage-1) * scoresPerPage + 1 - math.min((curPage) * scoresPerPage,#scoreList))
 					self:stoptweening()
 					self:diffusealpha(0)
 					self:y((scoreItemHeight) * (scoresOnThisPage+1) + (scoreItemSpacing*scoresOnThisPage) + scoreItemY - 8)
@@ -1515,11 +1516,12 @@ local function oldEvalStuff()
 					self:xy(scoreItemX + scoreItemWidth + 10 + (frameWidth - scoreItemWidth - scoreItemX - 20)/2, (scoreItemHeight + scoreItemSpacing + 1) * scoresPerPage + scoreItemY)
 				end,
 				UpdateListMessageCommand = function(self)
-					local scoresOnThisPage = math.abs((curPage-1) * scoresPerPage + 1 - math.min((curPage) * scoresPerPage,#scoreList))
-					if #scoreList == 0 then
+					if scoreList == nil or #scoreList == 0 then
 						self:diffusealpha(0)
 						return
 					end
+
+					local scoresOnThisPage = math.abs((curPage-1) * scoresPerPage + 1 - math.min((curPage) * scoresPerPage,#scoreList))
 					self:stoptweening()
 					self:diffusealpha(0)
 					self:y((scoreItemHeight) * (scoresOnThisPage+1) + (scoreItemSpacing*scoresOnThisPage) + scoreItemY - 8)
@@ -1887,12 +1889,14 @@ local function oldEvalStuff()
 				end,
 				UpdateScoresMessageCommand = function(self)
 					scoreIndex = (curPage - 1) * scoresPerPage + i
-					if scoreList[scoreIndex] ~= nil then
+					if scoreList ~= nil and scoreList[scoreIndex] ~= nil then
 						self:playcommand("Show")
 					else
 						self:playcommand("Hide")
 					end
-					self:RunCommandsOnChildren(function(self) self:playcommand("Set") end)
+					if scoreList ~= nil then
+						self:RunCommandsOnChildren(function(self) self:playcommand("Set") end)
+					end
 				end
 			}
 
@@ -2201,8 +2205,8 @@ local function offsetStuff()
 			self:zoom(offsetParamZoom)
 
 			local pn = GAMESTATE:GetEnabledPlayers()[1]
-			local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
-			local steps = GAMESTATE:GetCurrentSteps(pn)
+			local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats()
+			local steps = GAMESTATE:GetCurrentSteps()
 
 			self:RunCommandsOnChildren(function(self)
 				local params = 	{width = offsetParamWidth, 
@@ -2407,7 +2411,7 @@ local function newEvalStuff()
 
 	local tst = ms.JudgeScalers
 	local tso = tst[judge]
-	local ncol = GAMESTATE:GetCurrentSteps(PLAYER_1):GetNumColumns() - 1
+	local ncol = GAMESTATE:GetCurrentSteps():GetNumColumns() - 1
 	local middleCol = ncol / 2
 	local function recountCBs()
 		cbl = 0
@@ -2752,7 +2756,7 @@ local function newEvalStuff()
 					self:halign(0):valign(1)
 					self:xy(-frameWidth/2 + edgeTextSpacing2, upperDivider1Y - dividerHeight/2 - 3)
 					self:zoom(msdTextScale)
-					local msd = GAMESTATE:GetCurrentSteps(PLAYER_1):GetMSD(getCurRateValue(), 1)
+					local msd = GAMESTATE:GetCurrentSteps():GetMSD(getCurRateValue(), 1)
 					self:settextf("%5.2f", msd)
 					self:diffuse(byMSD(msd))
 				end
@@ -3043,7 +3047,7 @@ local function newEvalStuff()
 				self:xy(-playerInfoFrameWidth/2, -playerInfoFrameHeight + SCREEN_HEIGHT * playerInfoModsTopReferenceRatio)
 				self:zoom(smallerTextScale)
 				local mods = pss:GetHighScore():GetModifiers()
-				--GAMESTATE:GetPlayerState(PLAYER_1):GetCurrentPlayerOptions():GetInvalidatingMods()
+				--GAMESTATE:GetPlayerState():GetCurrentPlayerOptions():GetInvalidatingMods()
 				self:settext(mods)
 				self:maxwidth((playerInfoFrameWidth - 6) / smallerTextScale)
 			end
@@ -3075,7 +3079,7 @@ t[#t+1] = Def.ActorFrame {
 	OnCommand = function(self)
 		SCREENMAN:GetTopScreen():AddInputCallback(scroller)
 		if PREFSMAN:GetPreference("SortBySSRNormPercent") then
-			local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(pn)
+			local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats()
 			local curScore = pss:GetHighScore()
 			judge = 4
 			
